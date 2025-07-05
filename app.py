@@ -1,10 +1,10 @@
 import streamlit as st
-import openai
 import requests
 from bs4 import BeautifulSoup
+from openai import OpenAI
+# ---- Set your API Key here using Streamlit secrets ----
+client = OpenAI(api_key=st.secrets["openai_api_key"])
 
-# ---- Set your API Key here ----
-openai.api_key = st.secrets["openai_api_key"]
 # ---- Fixed list of known categories ----
 CATEGORIES = [
     "IT Services (IT Services Management)",
@@ -52,15 +52,16 @@ if st.button("Analyze Website"):
 
             user_prompt = f"Categories:\n{category_list}\nWebsite Content:\n{text}"
 
-            # Call OpenAI API
-            result = openai.ChatCompletion.create(
-                model="gpt-4o",  # use gpt-4o or other preferred model
+            # Call OpenAI API (v1.0+)
+            result = client.chat.completions.create(
+                model="gpt-4o",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ]
             )
 
+            # Display result
             st.subheader("Categorization Result")
             st.code(result.choices[0].message.content, language='python')
 
