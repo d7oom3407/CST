@@ -38,22 +38,20 @@ if st.button("Analyze Website"):
             # Fetch and clean website content
             response = requests.get(url, timeout=10)
             soup = BeautifulSoup(response.text, 'html.parser')
-            text = soup.get_text()
+            text = soup.get_text(separator=' ', strip=True)
 
             # Prepare categories as string
             category_list = "\n".join(f"{i+1}- {cat}" for i, cat in enumerate(selected_categories))
 
             # OpenAI Prompt
             system_prompt = (
-                "i want to give you the content of a website of a company and a group of categories and i want you to tell me "
-                "if the company satisfies these categories. for example i'll give a link, and the categories can be something like; "
-                "IT Consultation, Cybersecurity Solutions, IT Infra. u then tell me which ones you can be certain that they provide "
-                "after accessing their website. Your response should be in a form of a dictionary, where the keys are the categories, "
-                "and the value is a list where the first index is a binary representation of your response (0 for no, 1 for yes, or None if you're not sure), "
-                "and the second index your reasoning behind that choice. Do not add anything else to your response, no summary no nothing all i need to see is the dictionary"
+                "You will receive the content of a company website and a list of service categories. "
+                "Return a Python dictionary where each key is a category, and each value is a list of two elements: "
+                "[1 or 0 or None, explanation]. "
+                "Respond ONLY with a valid Python dictionary. Do NOT include any explanation or notes outside the dictionary."
             )
 
-            user_prompt = f"Categories:\n{category_list}\nWebsite Content:\n{text}"
+            user_prompt = f"Categories:\n{category_list}\n\nWebsite Content:\n{text}"
 
             # Call OpenAI API (v1.0+)
             result = client.chat.completions.create(
@@ -64,15 +62,18 @@ if st.button("Analyze Website"):
                 ]
             )
 
-            # Parse the dictionary result safely
+            # Extract and parse the response
+            response_text = result.choices[0].message.content.strip()
+
             try:
-                parsed_dict = ast.literal_eval(result.choices[0].message.content)
+                parsed_dict = ast.literal_eval(response_text)
             except Exception as e:
-                st.error(f"Failed to parse OpenAI response: {e}")
+                st.error("⚠️ Failed to parse OpenAI response. Here's the raw output:")
+                st.code(response_text, language="python")
             else:
                 st.subheader("Categorization Table")
 
-                # Convert to table with emoji status
+                # Build display data
                 data = []
                 for category, value in parsed_dict.items():
                     status, reasoning = value
@@ -84,6 +85,7 @@ if st.button("Analyze Website"):
                         icon = "⚪️"
                     data.append((icon, category, reasoning))
 
+                # Show as DataFrame
                 df = pd.DataFrame(data, columns=["Status", "Category", "Reasoning"])
                 st.dataframe(df, use_container_width=True)
 
