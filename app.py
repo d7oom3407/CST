@@ -103,7 +103,7 @@ if st.button("Analyze Website"):
                     table-layout: auto;
                 }
                 .custom-table th {
-                    background-color: #f2f2f2;
+                    background-color: #000000;
                     text-align: left;
                     white-space: nowrap;
                     padding: 8px;
