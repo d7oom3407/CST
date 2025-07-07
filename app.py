@@ -93,7 +93,53 @@ if st.button("Analyze Website"):
 
                 # Show as table
                 df = pd.DataFrame(data, columns=["Status", "Category", "Reasoning"])
-                st.table(df)
+                # Build HTML table with only Reasoning wrapped
+                html = """
+                <style>
+                    .custom-table {
+                        font-size: 18px;
+                        border-collapse: collapse;
+                        width: 100%;
+                        table-layout: fixed;
+                    }
+                    .custom-table th, .custom-table td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        vertical-align: top;
+                    }
+                    .custom-table th {
+                        background-color: #f2f2f2;
+                        text-align: left;
+                        white-space: nowrap;  /* prevent line breaks in headers */
+                    }
+                    .custom-table td:nth-child(1),
+                    .custom-table td:nth-child(2) {
+                        white-space: nowrap;  /* no wrapping in status/category */
+                        width: 1%;
+                    }
+                    .custom-table td:nth-child(3) {
+                        word-wrap: break-word;
+                        white-space: normal;  /* wrap reasoning */
+                    }
+                </style>
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Category</th>
+                            <th>Reasoning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                """
+                
+                for row in data:
+                    status, category, reasoning = row
+                    html += f"<tr><td>{status}</td><td>{category}</td><td>{reasoning}</td></tr>"
+                
+                html += "</tbody></table>"
+                
+                st.markdown(html, unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
