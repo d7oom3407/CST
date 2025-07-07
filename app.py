@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 from openai import OpenAI
+import ast
 # ---- Set your API Key here using Streamlit secrets ----
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
@@ -63,7 +64,28 @@ if st.button("Analyze Website"):
 
             # Display result
             st.subheader("Categorization Result")
-            st.code(result.choices[0].message.content, language='python')
+
+            # Parse the response into a dictionary
+            try:
+                parsed_dict = ast.literal_eval(result.choices[0].message.content)
+            except Exception as e:
+                st.error(f"Failed to parse response: {e}")
+            else:
+                st.subheader("Categorization Table")
+            
+                for category, value in parsed_dict.items():
+                    status, reasoning = value
+            
+                    # Emoji circle: green = 1, red = 0, gray = unknown
+                    if status == 1:
+                        indicator = "🟢"
+                    elif status == 0:
+                        indicator = "🔴"
+                    else:
+                        indicator = "⚪️"
+            
+                    st.markdown(f"**{indicator} {category}**\n\n- {reasoning}")
+
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
