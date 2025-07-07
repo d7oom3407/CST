@@ -64,7 +64,13 @@ if st.button("Analyze Website"):
 
             # Extract and parse the response
             response_text = result.choices[0].message.content.strip()
-
+            
+            # Remove markdown code block formatting if present
+            if response_text.startswith("```") and response_text.endswith("```"):
+                lines = response_text.splitlines()
+                response_text = "\n".join(line for line in lines if not line.strip().startswith("```"))
+            
+            # Try to parse the dictionary
             try:
                 parsed_dict = ast.literal_eval(response_text)
             except Exception as e:
@@ -72,7 +78,7 @@ if st.button("Analyze Website"):
                 st.code(response_text, language="python")
             else:
                 st.subheader("Categorization Table")
-
+            
                 # Build display data
                 data = []
                 for category, value in parsed_dict.items():
@@ -84,10 +90,7 @@ if st.button("Analyze Website"):
                     else:
                         icon = "⚪️"
                     data.append((icon, category, reasoning))
-
-                # Show as DataFrame
+            
+                # Show as table
                 df = pd.DataFrame(data, columns=["Status", "Category", "Reasoning"])
                 st.dataframe(df, use_container_width=True)
-
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
