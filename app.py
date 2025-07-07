@@ -96,41 +96,43 @@ if st.button("Analyze Website"):
                 # Build HTML table with only Reasoning wrapped
                 html = """
                 <style>
-                    .custom-table {
-                        font-size: 18px;
-                        border-collapse: collapse;
-                        width: 100%;
-                        table-layout: fixed;
-                    }
-                    .custom-table th, .custom-table td {
-                        border: 1px solid #ddd;
-                        padding: 8px;
-                        vertical-align: top;
-                    }
-                    .custom-table th {
-                        background-color: #f2f2f2;
-                        text-align: left;
-                        white-space: nowrap;  /* prevent line breaks in headers */
-                    }
-                    .custom-table td:nth-child(1),
-                    .custom-table td:nth-child(2) {
-                        white-space: nowrap;  /* no wrapping in status/category */
-                        width: 1%;
-                    }
-                    .custom-table td:nth-child(3) {
-                        word-wrap: break-word;
-                        white-space: normal;  /* wrap reasoning */
-                    }
-                </style>
-                <table class="custom-table">
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Category</th>
-                            <th>Reasoning</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                .custom-table {
+                    font-size: 18px;
+                    border-collapse: collapse;
+                    width: 100%;
+                    table-layout: auto;
+                }
+                .custom-table th {
+                    background-color: #f2f2f2;
+                    text-align: left;
+                    white-space: nowrap;
+                    padding: 8px;
+                    font-weight: bold;
+                    border: 1px solid #ddd;
+                }
+                .custom-table td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    vertical-align: top;
+                }
+                .custom-table td.reasoning {
+                    white-space: normal;
+                    word-break: break-word;
+                }
+                .custom-table td.status,
+                .custom-table td.category {
+                    white-space: nowrap;
+                }
+            </style>
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Category</th>
+                        <th>Reasoning</th>
+                    </tr>
+                </thead>
+                <tbody>
                 """
                 
                 for row in data:
