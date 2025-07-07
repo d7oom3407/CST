@@ -93,7 +93,7 @@ if st.button("Analyze Website"):
 
                 # Show as table
                 df = pd.DataFrame(data, columns=["Status", "Category", "Reasoning"])
-                st.dataframe(df, use_container_width=True)
+                st.table(df)
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
