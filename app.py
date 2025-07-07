@@ -2,7 +2,9 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 from openai import OpenAI
+import pandas as pd
 import ast
+
 # ---- Set your API Key here using Streamlit secrets ----
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
@@ -62,30 +64,28 @@ if st.button("Analyze Website"):
                 ]
             )
 
-            # Display result
-            st.subheader("Categorization Result")
-
-            # Parse the response into a dictionary
+            # Parse the dictionary result safely
             try:
                 parsed_dict = ast.literal_eval(result.choices[0].message.content)
             except Exception as e:
-                st.error(f"Failed to parse response: {e}")
+                st.error(f"Failed to parse OpenAI response: {e}")
             else:
                 st.subheader("Categorization Table")
-            
+
+                # Convert to table with emoji status
+                data = []
                 for category, value in parsed_dict.items():
                     status, reasoning = value
-            
-                    # Emoji circle: green = 1, red = 0, gray = unknown
                     if status == 1:
-                        indicator = "🟢"
+                        icon = "🟢"
                     elif status == 0:
-                        indicator = "🔴"
+                        icon = "🔴"
                     else:
-                        indicator = "⚪️"
-            
-                    st.markdown(f"**{indicator} {category}**\n\n- {reasoning}")
+                        icon = "⚪️"
+                    data.append((icon, category, reasoning))
 
+                df = pd.DataFrame(data, columns=["Status", "Category", "Reasoning"])
+                st.dataframe(df, use_container_width=True)
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
