@@ -5,100 +5,76 @@ from openai import OpenAI
 import ast
 import pandas as pd
 
-# Initialize OpenAI client
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
-# --- Language Toggle Styling and Layout Direction ---
-st.markdown("""
-<style>
-.language-toggle {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-.language-toggle button {
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
-}
-.language-selected {
-    background-color: #ff4b4b;
-    color: white;
-}
-.language-unselected {
-    background-color: #f0f0f0;
-    color: black;
-}
-/* Apply direction based on language */
-body[data-dir="rtl"] {
-    direction: rtl;
-    text-align: right;
-}
-body[data-dir="ltr"] {
-    direction: ltr;
-    text-align: left;
-}
-</style>
-<script>
-const lang = window.parent.document.body.innerText.includes("العربية") ? "rtl" : "ltr";
-document.body.setAttribute("data-dir", lang);
-</script>
-""", unsafe_allow_html=True)
+# إعداد زر اللغة + تنسيق الصفحة
+st.set_page_config(page_title="AI Categorizer", layout="wide")
 
 if "lang" not in st.session_state:
     st.session_state.lang = "English"
 
+# زر اختيار اللغة بتنسيق أجمل
 st.markdown("""
-    <style>
-    .lang-container {
-        display: flex;
-        justify-content: flex-start;
-        gap: 10px;
-        margin-bottom: 1rem;
-    }
-    .lang-button {
-        padding: 0.5rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: bold;
-    }
-    .selected {
-        background-color: #ff4b4b;
-        color: white;
-    }
-    .unselected {
-        background-color: #f0f0f0;
-        color: black;
-    }
-    </style>
-    <div class="lang-container">
-        <form action="" method="post">
-            <button class="lang-button {english_class}" name="lang" value="English">English</button>
-            <button class="lang-button {arabic_class}" name="lang" value="العربية">العربية</button>
-        </form>
-    </div>
-""".replace("{english_class}", "selected" if st.session_state.lang == "English" else "unselected")
-   .replace("{arabic_class}", "selected" if st.session_state.lang == "العربية" else "unselected"),
+<style>
+.lang-container {
+    display: flex;
+    justify-content: start;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.lang-button {
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+.selected {
+    background-color: #ff4b4b;
+    color: white;
+}
+.unselected {
+    background-color: #eeeeee;
+    color: black;
+}
+</style>
+<div class="lang-container">
+    <form action="" method="post">
+        <button class="lang-button {en}" name="lang" value="English">English</button>
+        <button class="lang-button {ar}" name="lang" value="العربية">العربية</button>
+    </form>
+</div>
+""".replace("{en}", "selected" if st.session_state.lang == "English" else "unselected")
+   .replace("{ar}", "selected" if st.session_state.lang == "العربية" else "unselected"),
    unsafe_allow_html=True)
 
-# Capture language selection manually
+# تحديد اللغة المختارة من النموذج
 if st.session_state.get("_language_posted") is None:
     from streamlit.runtime.scriptrunner import get_script_run_ctx
-    import streamlit as st_internal
     ctx = get_script_run_ctx()
-    if ctx is not None and ctx.query_params:
-        if "lang" in ctx.query_params:
-            st.session_state.lang = ctx.query_params["lang"][0]
-            st.session_state._language_posted = True
-
+    if ctx and ctx.query_params and "lang" in ctx.query_params:
+        st.session_state.lang = ctx.query_params["lang"][0]
+        st.session_state._language_posted = True
 
 lang = st.session_state.lang
 
-# Load categories and UI text based on language
+# إعداد اتجاه الصفحة بحسب اللغة
+direction = "rtl" if lang == "العربية" else "ltr"
+align = "right" if direction == "rtl" else "left"
+st.markdown(f"""
+    <style>
+    html, body, [class*="css"] {{
+        direction: {direction};
+        text-align: {align};
+    }}
+    .stDataFrame div[data-testid="stHorizontalBlock"] {{
+        direction: ltr;  /* خلي الجدول انجليزي حتى ما يخرب */
+    }}
+    </style>
+""", unsafe_allow_html=True)
+
+# تحميل التصنيفات والنصوص بحسب اللغة
 if lang == "English":
     CATEGORIES = [
         "Emerging Technologies (Augmented/Virtual Reality)",
@@ -108,27 +84,23 @@ if lang == "English":
         "Emerging Technologies (Distributed Ledger Technology)",
         "Emerging Technologies (Big Data)",
         "Emerging Technologies (3D Printing)",
-
         "IT Services (Consulting Services)",
         "IT Services (IT Services Management)",
         "IT Services (IT Staffing Services)",
         "IT Services (Cybersecurity Services)",
         "IT Services (Support and Maintenance)",
         "IT Services (Systems Integration and Development)",
-
         "Data Centers & Cloud Computing (Data Center Services including Web Hosting and Colocation)",
         "Data Centers & Cloud Computing (Infrastructure as a Service)",
         "Data Centers & Cloud Computing (Platform as a Service)",
         "Data Centers & Cloud Computing (Software as a Service)",
         "Data Centers & Cloud Computing (Other X-as-a-Service Products)",
         "Data Centers & Cloud Computing (Content Delivery Networks)",
-
         "Software (End-user Applications)",
         "Software (Game Applications)",
         "Software (Middleware and Embedded Software)",
         "Software (Business Software)",
         "Software (System Software)",
-
         "IT Hardware (Physical Devices)",
         "IT Hardware (Mobile Devices and Wearables)",
         "IT Hardware (Accessories)",
@@ -167,27 +139,23 @@ else:
         "التقنيات الناشئة (تقنية السجل الموزع)",
         "التقنيات الناشئة (البيانات الضخامة)",
         "التقنيات الناشئة (الطباعة الثلاثية الأبعاد)",
-
         "خدمات تقنية المعلومات (الخدمات الاستشارية)",
         "خدمات تقنية المعلومات (إدارة خدمات تقنية المعلومات)",
         "خدمات تقنية المعلومات (خدمات التوظيف الخاصة بتقنية المعلومات)",
         "خدمات تقنية المعلومات (خدمات الأمن السيبراني)",
         "خدمات تقنية المعلومات (الدعم والصيانة)",
         "خدمات تقنية المعلومات (تكامل الأنظمة والتطوير)",
-
         "خدمات مراكز البيانات والحوسبة السحابية (خدمات مراكز البيانات ومنها خدمات استضافة المواقع الإلكترونية والموقع المشترك)",
         "خدمات مراكز البيانات والحوسبة السحابية (البنية التحتية كخدمة)",
         "خدمات مراكز البيانات والحوسبة السحابية (المنصات كخدمة)",
         "خدمات مراكز البيانات والحوسبة السحابية (البرامج كخدمة)",
         "خدمات مراكز البيانات والحوسبة السحابية (منتجات أخرى كخدمة)",
         "خدمات مراكز البيانات والحوسبة السحابية (شبكات توصيل المحتوى)",
-
         "البرمجيات (تطبيقات المستخدم النهائي)",
         "البرمجيات (تطبيقات الألعاب)",
         "البرمجيات (البزامج الوسيطة والبرامج المضمنة)",
         "البرمجيات (برامج الأعمال)",
         "البرمجيات (برامج الأنظمة)",
-
         "أجهزة تقنية المعلومات (الأجهزة المادية)",
         "أجهزة تقنية المعلومات (الأجهزة المحمولة والتقنيات القابلة للارتداء)",
         "أجهزة تقنية المعلومات (الملحقات)",
@@ -219,23 +187,7 @@ else:
         )
     }
 
-# Apply direction based on language
-direction = "rtl" if lang == "العربية" else "ltr"
-st.markdown(f"""
-    <style>
-    html, body, [class*="css"] {{
-        direction: {direction};
-        text-align: { 'right' if direction == 'rtl' else 'left' };
-    }}
-    .stDataFrame div[data-testid="stHorizontalBlock"] {{
-        direction: ltr; /* Keep tables LTR for consistency */
-    }}
-    </style>
-""", unsafe_allow_html=True)
-
-
-# UI
-st.set_page_config(page_title=ui["title"], layout="wide")
+# واجهة المستخدم
 st.title(ui["title"])
 st.write(ui["subtitle"])
 url = st.text_input(ui["url_label"], placeholder="https://example.com")
@@ -277,8 +229,7 @@ if st.button(ui["button"]):
                     status, reason = value
                     icon = "🟢" if status == 1 else "🔴" if status == 0 else "⚪️"
                     data.append((icon, category, reason))
-
-                df = pd.DataFrame(data, columns=[ui['status'], ui['category'], ui['explanation']])
+                df = pd.DataFrame(data, columns=[ui["status"], ui["category"], ui["explanation"]])
                 st.dataframe(df, use_container_width=True)
 
         except Exception as e:
