@@ -50,48 +50,13 @@ document.body.setAttribute("data-dir", lang);
 if "lang" not in st.session_state:
     st.session_state.lang = "English"
 
-st.markdown("""
-    <style>
-    .lang-container {
-        display: flex;
-        justify-content: flex-start;
-        gap: 10px;
-        margin-bottom: 1rem;
-    }
-    .lang-button {
-        padding: 0.5rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: bold;
-    }
-    .selected {
-        background-color: #ff4b4b;
-        color: white;
-    }
-    .unselected {
-        background-color: #f0f0f0;
-        color: black;
-    }
-    </style>
-    <div class="lang-container">
-        <form action="" method="post">
-            <button class="lang-button {english_class}" name="lang" value="English">English</button>
-            <button class="lang-button {arabic_class}" name="lang" value="العربية">العربية</button>
-        </form>
-    </div>
-""".replace("{english_class}", "selected" if st.session_state.lang == "English" else "unselected")
-   .replace("{arabic_class}", "selected" if st.session_state.lang == "العربية" else "unselected"),
-   unsafe_allow_html=True)
-
-# Capture language selection manually
-if st.session_state.get("_language_posted") is None:
-    params = st.experimental_get_query_params()
-    if "lang" in params:
-        st.session_state.lang = params["lang"][0]
-
-
+col1, col2 = st.columns([1, 1])
+with col1:
+    if st.button("English", key="english_btn"):
+        st.session_state.lang = "English"
+with col2:
+    if st.button("العربية", key="arabic_btn"):
+        st.session_state.lang = "العربية"
 
 lang = st.session_state.lang
 
