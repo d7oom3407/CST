@@ -173,7 +173,7 @@ st.set_page_config(page_title=ui["title"], layout="wide")
 st.title(ui["title"])
 st.write(ui["subtitle"])
 url = st.text_input(ui["url_label"], placeholder="https://example.com")
-selected_categories = st.multiselect(ui["select_label"], CATEGORIES, placeholder="https://example.com")
+selected_categories = st.multiselect(ui["select_label"], CATEGORIES, placeholder=ui["categories_placeholder"])
 
 if st.button(ui["button"]):
     if not url or not selected_categories:
