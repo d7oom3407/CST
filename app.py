@@ -8,7 +8,7 @@ import pandas as pd
 # Initialize OpenAI client
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
-# --- Language Toggle with Buttons ---
+# --- Language Toggle Styling and Layout Direction ---
 st.markdown("""
 <style>
 .language-toggle {
@@ -31,7 +31,20 @@ st.markdown("""
     background-color: #f0f0f0;
     color: black;
 }
+/* Apply direction based on language */
+body[data-dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+body[data-dir="ltr"] {
+    direction: ltr;
+    text-align: left;
+}
 </style>
+<script>
+const lang = window.parent.document.body.innerText.includes("العربية") ? "rtl" : "ltr";
+document.body.setAttribute("data-dir", lang);
+</script>
 """, unsafe_allow_html=True)
 
 if "lang" not in st.session_state:
@@ -197,7 +210,7 @@ if st.button(ui["button"]):
             response_text = result.choices[0].message.content.strip()
             if response_text.startswith("```") and response_text.endswith("```"):
                 lines = response_text.splitlines()
-                response_text = "\n".join(line for line in lines if not line.strip().startswith("```"))
+                response_text = "\n".join(line for line in lines if not line.strip().startswith("```") or line.strip() == "```")
 
             try:
                 parsed_dict = ast.literal_eval(response_text)
