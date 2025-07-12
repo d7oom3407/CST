@@ -87,7 +87,7 @@ st.markdown("""
 
 # Capture language selection manually
 if st.session_state.get("_language_posted") is None:
-    params = st.experimental_get_query_params()
+    params = st.query_params()
     if "lang" in params:
         st.session_state.lang = params["lang"][0]
 
