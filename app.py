@@ -67,6 +67,7 @@ if lang == "English":
             "Return a Python dictionary where each key is a category, and each value is a list of two elements: "
             "[1 or 0 or None, explanation]. "
             "Respond ONLY with a valid Python dictionary. Do NOT include any explanation or notes outside the dictionary."
+            "Your response must be entirely in English, regardless of the website's language."
         )
     }
 else:
@@ -126,6 +127,7 @@ else:
             "أرجو أن تعيد الرد بشكل قاموسي (dictionary) يحتوي على كل تصنيف كمفتاح، "
             "وقيمته قائمة مكونة من عنصرين: [1 أو 0 أو None، التفسير]. "
             "الرجاء إعادة الرد على شكل قاموس بايثون فقط بدون أي شرح خارجي أو تعليقات."
+            "ردك يجب ان يكون باللغة العربية بالكامل، بغض النظر عن اللغة المستخدمة لمحتوى الموقع."
         )
     }
 
