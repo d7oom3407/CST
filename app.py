@@ -173,57 +173,10 @@ if st.button(ui["button"]):
                     icon = "🟢" if status == 1 else "🔴" if status == 0 else "⚪️"
                     data.append((icon, category, reason))
 
-                # Table HTML
-                html = f"""
-                <style>
-                    .custom-table {{
-                        font-size: 18px;
-                        border-collapse: collapse;
-                        width: 100%;
-                        table-layout: auto;
-                        {'direction: rtl;' if lang == 'العربية' else ''}
-                    }}
-                    .custom-table th {{
-                        background-color: #f2f2f2;
-                        text-align: {'right' if lang == 'العربية' else 'left'};
-                        white-space: nowrap;
-                        padding: 8px;
-                        font-weight: bold;
-                        border: 1px solid #ddd;
-                    }}
-                    .custom-table td {{
-                        border: 1px solid #ddd;
-                        padding: 8px;
-                        vertical-align: top;
-                    }}
-                    .custom-table td.reasoning {{
-                        white-space: normal;
-                        word-break: break-word;
-                    }}
-                    .custom-table td.status,
-                    .custom-table td.category {{
-                        white-space: nowrap;
-                    }}
-                </style>
-                <table class="custom-table">
-                    <thead>
-                        <tr>
-                            <th>{ui['status']}</th>
-                            <th>{ui['category']}</th>
-                            <th>{ui['explanation']}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                """
-                for status, category, reason in data:
-                    html += f"""
-                        <tr>
-                            <td class='status'>{status}</td>
-                            <td class='category'>{category}</td>
-                            <td class='reasoning'>{reason}</td>
-                        </tr>
-                    """
-                html += "</tbody></table>"
-                st.markdown(html, unsafe_allow_html=True)
+                # Display using Streamlit native table
+                import pandas as pd
+                df = pd.DataFrame(data, columns=[ui['status'], ui['category'], ui['explanation']])
+                st.dataframe(df, use_container_width=True)
+
         except Exception as e:
             st.error(f"{ui['error_analyze']} {e}")
