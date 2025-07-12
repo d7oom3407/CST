@@ -118,6 +118,8 @@ if lang == "English":
             "Return a Python dictionary where each key is a category, and each value is a list of two elements: "
             "[1 or 0 or None, explanation]. "
             "Respond ONLY with a valid Python dictionary. Do NOT include any explanation or notes outside the dictionary."
+            "Your respose must be entirely in English regardless of the website's content."
+            "The exlpaination inside of the dictionary must not be too long, nor too brief. It should be a clear and brief explanation consisting of 1-2 sentences."
         )
     }
 else:
@@ -175,9 +177,11 @@ else:
         "system_prompt": (
             "سيتم تزويدك بمحتوى موقع إلكتروني تابع لشركة، بالإضافة إلى قائمة من التصنيفات. "
             "مهمتك هي تحديد ما إذا كانت الشركة تقدم هذه التصنيفات من خدمات أم لا. "
-            "أرجو أن تعيد الرد بشكل قاموسي (dictionary) يحتوي على كل تصنيف كمفتاح، "
+            "أرجو أن تعيد الرد بشكل قاموس يحتوي على كل تصنيف كمفتاح، "
             "وقيمته قائمة مكونة من عنصرين: [1 أو 0 أو None، التفسير]. "
+            "يجب ان تكون اجابتك باللغة العربية بالكامل بغض النظر عن لغة محتوى الموقع."
             "الرجاء إعادة الرد على شكل قاموس بايثون فقط بدون أي شرح خارجي أو تعليقات."
+            "يجب ألا يكون الشرح داخل القاموس طويلاً جداً ولا مختصراً جداً. ينبغي أن يكون الشرح واضحاً وموجزاً."
         )
     }
 
