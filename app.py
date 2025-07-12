@@ -91,6 +91,7 @@ if lang == "English":
         "subtitle": "Enter the company's website and choose the service categories you want to evaluate.",
         "url_label": "Website URL",
         "select_label": "Select Categories to Evaluate",
+        "categories_placeholder": "Choose Categories",
         "button": "Analyze Website",
         "warning": "Please provide a valid URL and select at least one category.",
         "result_title": "Categorization Results",
@@ -149,6 +150,7 @@ else:
         "subtitle": "أدخل رابط موقع الشركة واختر التصنيفات التي تريد تحليلها.",
         "url_label": "رابط الموقع الإلكتروني",
         "select_label": "اختر التصنيفات التي ترغب بتحليلها",
+        "categories_placeholder": "أختر التصنيفات",
         "button": "تحليل الموقع",
         "warning": "يرجى إدخال رابط صحيح واختيار تصنيف واحد على الأقل.",
         "result_title": "نتائج التصنيف",
@@ -171,7 +173,7 @@ st.set_page_config(page_title=ui["title"], layout="wide")
 st.title(ui["title"])
 st.write(ui["subtitle"])
 url = st.text_input(ui["url_label"], placeholder="https://example.com")
-selected_categories = st.multiselect(ui["select_label"], CATEGORIES)
+selected_categories = st.multiselect(ui["select_label"], CATEGORIES, placeholder="https://example.com")
 
 if st.button(ui["button"]):
     if not url or not selected_categories:
