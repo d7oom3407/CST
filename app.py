@@ -14,7 +14,7 @@ st.markdown("""
 .language-toggle {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 .language-toggle button {
     padding: 0.5rem 1rem;
