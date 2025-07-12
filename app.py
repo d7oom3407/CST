@@ -3,12 +3,49 @@ import requests
 from bs4 import BeautifulSoup
 from openai import OpenAI
 import ast
+import pandas as pd
 
 # Initialize OpenAI client
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
-# Language selection
-lang = st.radio("Choose Language / اختر اللغة", ["English", "العربية"])
+# --- Language Toggle with Buttons ---
+st.markdown("""
+<style>
+.language-toggle {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.language-toggle button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+}
+.language-selected {
+    background-color: #ff4b4b;
+    color: white;
+}
+.language-unselected {
+    background-color: #f0f0f0;
+    color: black;
+}
+</style>
+""", unsafe_allow_html=True)
+
+if "lang" not in st.session_state:
+    st.session_state.lang = "English"
+
+col1, col2 = st.columns([1, 1])
+with col1:
+    if st.button("English", key="english_btn"):
+        st.session_state.lang = "English"
+with col2:
+    if st.button("العربية", key="arabic_btn"):
+        st.session_state.lang = "العربية"
+
+lang = st.session_state.lang
 
 # Load categories and UI text based on language
 if lang == "English":
@@ -67,8 +104,6 @@ if lang == "English":
             "Return a Python dictionary where each key is a category, and each value is a list of two elements: "
             "[1 or 0 or None, explanation]. "
             "Respond ONLY with a valid Python dictionary. Do NOT include any explanation or notes outside the dictionary."
-            "The exlpaination inside of the dictionary must not be too long, nor too brief. It should be a clear and brief explanation consisting of 1-2 sentences."
-            "Your response must be entirely in English, regardless of the website's language."
         )
     }
 else:
@@ -128,8 +163,6 @@ else:
             "أرجو أن تعيد الرد بشكل قاموسي (dictionary) يحتوي على كل تصنيف كمفتاح، "
             "وقيمته قائمة مكونة من عنصرين: [1 أو 0 أو None، التفسير]. "
             "الرجاء إعادة الرد على شكل قاموس بايثون فقط بدون أي شرح خارجي أو تعليقات."
-            "يجب ألا يكون الشرح داخل القاموس طويلاً جداً ولا مختصراً للغاية. ينبغي أن يكون شرحاً واضحاً وموجزاً يتكون من جملة إلى جملتين."
-            "ردك يجب ان يكون باللغة العربية بالكامل، بغض النظر عن اللغة المستخدمة لمحتوى الموقع."
         )
     }
 
@@ -177,8 +210,6 @@ if st.button(ui["button"]):
                     icon = "🟢" if status == 1 else "🔴" if status == 0 else "⚪️"
                     data.append((icon, category, reason))
 
-                # Display using Streamlit native table
-                import pandas as pd
                 df = pd.DataFrame(data, columns=[ui['status'], ui['category'], ui['explanation']])
                 st.dataframe(df, use_container_width=True)
 
