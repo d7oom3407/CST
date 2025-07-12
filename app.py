@@ -13,7 +13,7 @@ st.markdown("""
 <style>
 .language-toggle {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
     margin-bottom: 2rem;
 }
 .language-toggle button {
