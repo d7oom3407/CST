@@ -223,10 +223,10 @@ if st.button(ui["button"]):
             )
 
             response_text = result.choices[0].message.content.strip()
+            # Remove code block markers if present
             if response_text.startswith("```") and response_text.endswith("```"):
-                lines = response_text.splitlines()
-                response_text = "\n".join(line for line in lines if not line.strip().startswith("```") or line.strip() == "```")
-
+                response_text = "\n".join(response_text.splitlines()[1:-1])  # remove first and last line
+                
             try:
                 parsed_dict = ast.literal_eval(response_text)
             except Exception:
