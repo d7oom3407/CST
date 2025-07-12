@@ -87,13 +87,10 @@ st.markdown("""
 
 # Capture language selection manually
 if st.session_state.get("_language_posted") is None:
-    from streamlit.runtime.scriptrunner import get_script_run_ctx
-    import streamlit as st_internal
-    ctx = get_script_run_ctx()
-    if ctx is not None and ctx.query_params:
-        if "lang" in ctx.query_params:
-            st.session_state.lang = ctx.query_params["lang"][0]
-            st.session_state._language_posted = True
+    params = st.experimental_get_query_params()
+    if "lang" in params:
+        st.session_state.lang = params["lang"][0]
+
 
 
 lang = st.session_state.lang
