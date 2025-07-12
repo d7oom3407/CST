@@ -181,6 +181,21 @@ else:
         )
     }
 
+# Apply direction based on language
+direction = "rtl" if lang == "العربية" else "ltr"
+st.markdown(f"""
+    <style>
+    html, body, [class*="css"] {{
+        direction: {direction};
+        text-align: { 'right' if direction == 'rtl' else 'left' };
+    }}
+    .stDataFrame div[data-testid="stHorizontalBlock"] {{
+        direction: ltr; /* Keep tables LTR for consistency */
+    }}
+    </style>
+""", unsafe_allow_html=True)
+
+
 # UI
 st.set_page_config(page_title=ui["title"], layout="wide")
 st.title(ui["title"])
