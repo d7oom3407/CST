@@ -212,7 +212,7 @@ if st.button(ui["button"]):
         st.warning(ui["warning"])
     else:
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=100)
             soup = BeautifulSoup(response.text, 'html.parser')
             text = soup.get_text(separator=' ', strip=True)
             category_list = "\n".join(f"{i+1}- {cat}" for i, cat in enumerate(selected_categories))
